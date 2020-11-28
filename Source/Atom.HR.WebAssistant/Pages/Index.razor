@@ -1,0 +1,83 @@
+﻿@page "/"
+@using Syncfusion.Blazor.Layouts
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Maps
+@using Syncfusion.Blazor.Charts
+@using Atom.HR.Shared
+@inject Atom.HR.WebAssistant.Areas.Storage.PersonProfileService PersonProfileService
+
+<SfDashboardLayout CellSpacing="@CellSpacing" Columns="@Columns" CellAspectRatio="@AspectRatio">
+    <DashboardLayoutPanels>
+        <DashboardLayoutPanel Id=" 0" Row="0" Col="0" SizeX="2" SizeY="2">
+    <HeaderTemplate><div>Кадры</div></HeaderTemplate>
+    <ContentTemplate>
+        <div style="height:100%; width:100%">
+            <SfAccumulationChart HtmlAttributes="ChartAttribute" @ref="ActiveVisitorsInstance" EnableAnimation="true" EnableSmartLabels="true" Width="100%" Height="100%">
+                <AccumulationChartTooltipSettings Enable="true"></AccumulationChartTooltipSettings>
+                <AccumulationChartLegendSettings Visible="false"></AccumulationChartLegendSettings>
+                <AccumulationChartSeriesCollection>
+                    <AccumulationChartSeries DataSource="@ProfileTypes" XName="@nameof(Info2.Name)" YName="@nameof(Info2.Count)" InnerRadius="35%" Radius="100%" Name="Количество">
+                        <AccumulationDataLabelSettings Visible="true" Name="text">
+                            <AccumulationChartDataLabelFont FontWeight="600" Color="white" Size="14px"></AccumulationChartDataLabelFont>
+                        </AccumulationDataLabelSettings>
+                    </AccumulationChartSeries>
+                </AccumulationChartSeriesCollection>
+            </SfAccumulationChart>
+        </div>
+    </ContentTemplate>
+    </DashboardLayoutPanel>
+    </DashboardLayoutPanels>
+</SfDashboardLayout>
+
+@code {
+
+    public double[] CellSpacing = { 5, 5 };
+    public int Columns = 6;
+    public double AspectRatio = 100 / 85;
+
+    SfAccumulationChart ActiveVisitorsInstance;
+
+    SfDashboardLayout dashboardObject;
+
+
+    List<Info2> ProfileTypes { get; set; } = new List<Info2>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //OnAfterRenderAsync will be triggered after the component rendered.
+        await Task.Delay(2500);
+        // refreshing all the chart and map components to fit within the panel
+        this.ActiveVisitorsInstance.Refresh();
+    
+    }
+
+    protected override async Task OnInitializedAsync()
+    {        
+        // ProfileTypes = await PersonProfileService.GetTypesProfiles();    
+    }
+
+    Dictionary<string, object> ChartAttribute = new Dictionary<string, object>()
+{
+        { "class", "custom-chart" }
+    };
+}
+
+<style> 
+    .custom-chart {
+        width: 100%;
+        height: 100%;
+    }
+    [class^="sf-icon-"],
+    [class*=" sf-icon-"] {
+        font-family: "e-sb-icons" !important;
+        speak: none;
+        font-size: 55px;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+</style>

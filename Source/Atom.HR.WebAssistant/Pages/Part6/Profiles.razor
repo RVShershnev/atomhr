@@ -1,0 +1,55 @@
+﻿@page "/profiles"
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.DropDowns
+@using System;
+@using Atom.HR.Models;
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject Atom.HR.WebAssistant.Areas.Storage.PersonProfileService PersonProfileService
+
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="CreateVacabcy">Primary</SfButton>
+</div>
+<div class="row">
+    <SfSpinner @ref="SpinnerObj" Target="#container"></SfSpinner>
+    <div id="container">
+        <SfGrid DataSource="@GridData" AllowSelection="true" AllowSorting="true" AllowFiltering="true" EnableVirtualization="true" EnableHover="false" Height="600" RowHeight="38">
+            <GridEvents OnRecordClick="RecordClick" TValue="PersonProfile"></GridEvents>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+            <GridPageSettings PageSize="40"></GridPageSettings>
+            <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+            <GridColumns>
+                <GridColumn Type="ColumnType.CheckBox" AllowFiltering="false" AllowSorting="false" Width="60"></GridColumn>
+                <GridColumn Field=@nameof(PersonProfile.Id) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(PersonProfile.Name) HeaderText="Полное имя" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(PersonProfile.TypeCompanyRelation) HeaderText="Отношение" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>                
+            </GridColumns>
+        </SfGrid>
+    </div>
+</div>
+
+
+@code {
+    public IEnumerable<PersonProfile> GridData { get; set; }
+    public int Value { get; set; } = 1000;
+    SfSpinner SpinnerObj;
+    string target { get; set; } = "#container";
+
+    private int? index { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GridData = await PersonProfileService.GetPersonProfilesAsync();
+    }
+
+    public void CreateVacabcy()
+    {
+        UriHelper.NavigateTo($"createprofile");
+    }
+    public void RecordClick(RecordClickEventArgs<PersonProfile> Args)
+    {
+        var prjectId = Args.RowData.Id;
+        UriHelper.NavigateTo($"/profiles/{prjectId.Replace('/','_')}");
+    }
+}
+

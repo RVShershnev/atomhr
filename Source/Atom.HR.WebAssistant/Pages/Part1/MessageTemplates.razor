@@ -1,0 +1,49 @@
+﻿@page "/messages"
+@using Atom.HR.MessageTemplates
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
+
+<h3>Шаблоны сообщений</h3>
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="CreateVacabcy">Создать шаблон</SfButton>
+</div>
+<div class="row">
+    <SfGrid DataSource="@GridData" AllowFiltering="true" AllowGrouping="true" AllowExcelExport="true">
+        <GridEvents OnRecordClick="RecordClick" TValue="MessageTemplate"></GridEvents>
+        <GridColumns>
+            <GridColumn Field=@nameof(MessageTemplate.Id) HeaderText="Id" IsPrimaryKey="true" TextAlign="@TextAlign.Center" HeaderTextAlign="@TextAlign.Center" Width="140"></GridColumn>
+            <GridColumn Field=@nameof(MessageTemplate.Name) HeaderText="Название" ValidationRules="@(new ValidationRules{ Required=true})" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(MessageTemplate.Language) HeaderText="Язык" Width="140" TextAlign="@TextAlign.Right" ValidationRules="@(new ValidationRules { Required = true })" HeaderTextAlign="@TextAlign.Right"></GridColumn>
+            <GridColumn Field=@nameof(MessageTemplate.Sex) HeaderText="Пол" TextAlign="TextAlign.Right" Type="ColumnType.Date" Width="160"></GridColumn>
+            <GridColumn Field=@nameof(MessageTemplate.Key) HeaderText="Привязка" Width="150"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+</div>
+
+    @code {
+
+        public List<MessageTemplate> GridData { get; set; } = new List<MessageTemplate>();
+        private bool Check = false;
+      
+        protected override async Task OnInitializedAsync()
+        {
+            GridData = await MessageTemplatesService.GetAllMessageTemplates();
+        }
+
+
+        public void CreateVacabcy()
+        {
+            UriHelper.NavigateTo($"createmessagetemplate");
+        }
+        public void RecordClick(RecordClickEventArgs<MessageTemplate> Args)
+        {
+            var prjectId = Args.RowData.Id;
+            UriHelper.NavigateTo($"/messages/{prjectId.Replace('/', '_')}");
+        }
+
+    }

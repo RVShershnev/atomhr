@@ -1,0 +1,232 @@
+﻿@page "/createvacancy"
+@page "/vacancies/{Id}"
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Calendars
+@using Atom.HR.Models
+@inject Atom.HR.WebAssistant.Areas.Storage.VacancyService VacancyService
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+
+<h3>Создать вакансию</h3>
+
+<div class="row">
+    <SfTextBox Placeholder="Название" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@vacancy.Name"></SfTextBox>
+</div>
+<h5>Описание вакансии</h5>
+<div class="row">
+    <SfRichTextEditor ShowCharCount="true" MaxLength="2000" @bind-Value="@vacancy.Description">
+        <ChildContent>
+            <RichTextEditorToolbarSettings Items="@Tools" />
+        </ChildContent>
+    </SfRichTextEditor>
+</div>
+<div class="row">
+    <h5>Бюджет на проект</h5>
+    <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=15 Step=@setIncrement></SfNumericTextBox>
+    <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=15 Step=@setIncrement></SfNumericTextBox>
+</div>
+
+<div class="row">
+    <h5>Срок закрытия вакансии</h5>
+    <SfCheckBox @bind-Checked="@isChecked" Label="Без срока" @bind-Value="@vacancy.Description"></SfCheckBox>
+</div>
+<div class="row">
+    <SfDatePicker TValue="DateTime?" Placeholder="Choose a Date"></SfDatePicker>
+</div>
+
+<div class="row">
+    <h5>Срок проекта</h5>
+    <SfCheckBox @bind-Checked="@isCheckedRange" Label="Без срока"></SfCheckBox>
+</div>
+<div class="row">
+    <SfDateRangePicker Placeholder="Choose a Range" Min="@MinDate" Max="@MaxDate"></SfDateRangePicker>
+</div>
+<div class="row">
+    <h5>Навыки</h5>
+    <SfMultiSelect TValue="string[]" Mode="@VisualMode.CheckBox" Placeholder="Select a vegetable" DataSource="@SkillList" ShowSelectAll="@ShowSelectAllCheckBox"
+                   EnableSelectionOrder="@EnableSelectionOrders" FilterBarPlaceholder="Search Vegetables" EnableGroupCheckBox="@EnableCheckBox" PopupHeight="350px">
+        <MultiSelectFieldSettings GroupBy="@nameof(Skill.Group)" Value="@nameof(Skill.Name)"></MultiSelectFieldSettings>
+    </SfMultiSelect>
+</div>
+@if (vacancy.ChallengeId == null || vacancy.ChallengeId == "")
+{
+    <div class="content-wrapper">
+        <div class="row">
+            <SfButton IsPrimary="true" OnClick="CreateChellenge">Добавить Челендж!!!</SfButton>
+        </div>
+    </div>
+}
+else
+{
+    <div class="content-wrapper">
+        <div class="row">
+            <SfButton IsPrimary="true" OnClick="ViewChellenge">Изменить Челендж!!!</SfButton>
+        </div>
+    </div>
+}
+<div class="class">
+    <SfButton IsPrimary="true" OnClick="Create">Создать</SfButton>
+</div>
+
+@code {
+
+    private double? setMin { get; set; } = 0;
+    private double? setMax { get; set; } = double.MaxValue;
+    private double? setIncrement { get; set; } = 1;
+    private double? stepMin { get; set; } = 1;
+
+
+    private bool isCheckedRange = true;
+    private bool isChecked = true;
+    public DateTime MinDate { get; set; } = DateTime.Now;
+    public DateTime MaxDate { get; set; } = DateTime.Now.AddDays(1095);
+
+    [Parameter]
+    public string Id { get; set; }
+    bool isNewProfile { get; set; } = false;
+
+    bool IsSendMessage { get; set; }
+
+    Raven.Client.Documents.Session.IDocumentSession session;
+
+    Atom.HR.Models.Vacancy vacancy { get; set; } = new Models.Vacancy();
+
+    protected override async Task OnInitializedAsync()
+    {
+        session = VacancyService.GetSession();
+        if (Id == null)
+        {
+            isNewProfile = true;
+        }
+        if (Id != null && Id != "")
+        {
+
+            var result = session.Load<Vacancy>(Id.Replace('_', '/'));
+            if (result != null)
+            {
+                vacancy = result;
+            }
+            else
+            {
+                vacancy = new Vacancy();
+                isNewProfile = true;
+            }
+        }
+    }
+
+    protected void Create()
+    {
+        if (isNewProfile)
+        {
+            session.Store(vacancy);
+        }
+        session.SaveChanges();
+        session.Dispose();
+        UriHelper.NavigateTo("/vacancies");
+    }
+    protected void CreateChellenge()
+    {
+        UriHelper.NavigateTo($"createchallenge");
+    }
+    protected void ViewChellenge()
+    {
+        UriHelper.NavigateTo($"challenge");
+    }
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+{
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.LowerCase },
+        new ToolbarItemModel() { Command = ToolbarCommand.UpperCase },
+        new ToolbarItemModel() { Command = ToolbarCommand.SuperScript },
+        new ToolbarItemModel() { Command = ToolbarCommand.SubScript },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Outdent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Indent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel() { Command = ToolbarCommand.Image },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateTable },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.ClearFormat },
+        new ToolbarItemModel() { Command = ToolbarCommand.Print },
+        new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo }
+    };
+
+
+    public bool ShowSelectAllCheckBox { get; set; } = true;
+    public bool EnableSelectionOrders { get; set; } = false;
+    public bool EnableCheckBox { get; set; } = true;
+    public class Vegetables
+    {
+        public string Vegetable { get; set; }
+        public string Category { get; set; }
+        public string ID { get; set; }
+    }
+    List<Skill> SkillList = new List<Skill>()
+{
+        new Skill() { Name = "c#", Group = "programming"},
+        new Skill() { Name = "asp.net", Group = "web"},
+        new Skill() { Name = "powerbi", Group = "analytic"},
+        new Skill() { Name = "java", Group = "programming"},
+        new Skill() { Name = "scala", Group = "programming" },
+        new Skill() { Name = "blazor", Group = "web"},
+        new Skill() { Name = "xamarin", Group = "mobile" },
+        new Skill() { Name = "python", Group = "Programming"},
+
+    };
+
+    SfCheckBox<bool> CheckboxObj;
+    private bool Visibility { get; set; } = true;
+    private bool ShowButton { get; set; } = false;
+    private void DialogOpen(Object args)
+    {
+        this.ShowButton = false;
+    }
+    private void DialogClose(Object args)
+    {
+        this.ShowButton = true;
+    }
+    private void OnBtnClick()
+    {
+        this.Visibility = true;
+    }
+    private void DlgButtonClick()
+    {
+        this.Visibility = false;
+    }
+    private void OverlayClick(Object args)
+    {
+        if ((bool)this.CheckboxObj.Checked)
+        {
+            this.Visibility = false;
+        }
+        else
+        {
+            this.Visibility = true;
+        }
+    }
+}
+<style>
+    .control_wrapper {
+        width: 350px;
+        margin: 0 auto;
+        padding-top: 70px;
+    }
+</style>

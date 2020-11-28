@@ -1,0 +1,85 @@
+﻿@using Syncfusion.Blazor.DropDowns
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Atom.HR.WebAssistant</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="settings">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Настройки
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="vacancies">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Вакансии
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="profiles">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Профили
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="messages">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Шаблоны
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testworks">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Тесты
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="preferences">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Оценки
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="ranking">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Ранжирование
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    
+    public class EmployeeData
+    {
+        public string FirstName { get; set; }
+        public string Designation { get; set; }
+        public string Eimg { get; set; }
+    }
+    List<EmployeeData> Data = new List<EmployeeData>
+{
+        new EmployeeData() { FirstName = "Andrew Fuller",  Designation = "Team Lead", Eimg= "7" },
+        new EmployeeData() { FirstName = "Anne Dodsworth", Designation = "Developer", Eimg= "1" },
+        new EmployeeData() { FirstName = "Janet Leverling", Designation = "HR", Eimg= "3" },
+        new EmployeeData() { FirstName = "Laura Callahan", Designation = "Product Manager", Eimg= "2" },
+        new EmployeeData() { FirstName = "Margaret Peacock", Designation = "Developer", Eimg= "6" },
+        new EmployeeData() { FirstName = "Michael Suyama", Designation = "Team Lead", Eimg= "9" },
+        new EmployeeData() { FirstName = "Nancy Davolio", Designation = "Product Manager", Eimg= "4" },
+        new EmployeeData() { FirstName = "Robert King", Designation = "Developer", Eimg= "8" },
+        new EmployeeData() { FirstName = "Steven Buchanan", Designation = "CEO", Eimg= "10" },
+    };
+}

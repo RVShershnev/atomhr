@@ -1,0 +1,212 @@
+﻿@page "/createmessagetemplate"
+@page "/messages/{MessageId}"
+
+@using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Calendars
+@using Atom.HR.Models
+@using Atom.HR.MessageTemplates
+
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
+
+<h3>Создать шаблон</h3>
+<div class="row mt-2">
+    <div class="col-lg-4">
+        <SfTextBox Placeholder="Название" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@messageTemplate.Name"></SfTextBox>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="title col-lg-6">Язык</div>
+    <div class="col-lg-2">
+        <SfAutoComplete TValue="string" TItem="string" Placeholder="e.g. Английский" DataSource="@Languages" @bind-Value="messageTemplate.Language">
+            <AutoCompleteFieldSettings Value="Text"></AutoCompleteFieldSettings>
+        </SfAutoComplete>
+    </div>
+</div>
+<div class="row mt-2">
+    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" Placeholder="Выберите пол" @bind-Value="@messageTemplate.Sex" DataSource="@Sexes">
+    </SfComboBox>
+</div>
+<div class="row mt-2">
+    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" Placeholder="Выберите канал" @bind-Value="@messageTemplate.Channel" DataSource="@Channels">
+    </SfComboBox>
+</div>
+<div class="row mt-2">
+   
+        <SfTextBox Placeholder="Введите текст шаблона" FloatLabelType="FloatLabelType.Always" Multiline="true"  @bind-Value="@messageTemplate.Text"></SfTextBox>
+
+</div>
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="Save">Сохранить</SfButton>
+</div>
+
+@code {
+    [Parameter]
+    public string MessageId { get; set; }
+    bool isNewProfile { get; set; } = false;
+    Raven.Client.Documents.Session.IDocumentSession session;
+
+    Atom.HR.MessageTemplates.MessageTemplate messageTemplate { get; set; } = new Atom.HR.MessageTemplates.MessageTemplate() { Language = "Русский" };
+
+
+
+    private List<string> Sexes = new List<string>()
+{
+        Sex.Male.ToString(),
+        Sex.Female.ToString(),
+        Sex.Any.ToString()
+    };
+    private List<string> Channels = new List<string>()
+{
+         "Телефон",
+         "Мессенджер",
+         "Email"
+    };
+    private List<string> Languages = new List<string>()
+{
+            "Азербайджанский",
+            "Албанский",
+            "Амхарский",
+            "Английский",
+            "Арабский",
+            "Армянский",
+            "Африкаанс",
+            "Баскский",
+            "Белорусский",
+            "Бенгальский",
+            "Бирманский",
+            "Болгарский",
+            "Боснийский",
+            "Валлийский",
+            "Венгерский",
+            "Вьетнамский",
+            "Гавайский",
+            "Гаитянский",
+            "Галисийский",
+            "Греческий",
+            "Грузинский",
+            "Гуджарати",
+            "Гэльский",
+            "Датский",
+            "Западнофризский",
+"Зулу",
+"Иврит",
+"Игбо",
+"Идиш",
+"Индонезийский",
+"Ирландский",
+"Исландский",
+"Испанский",
+"Итальянский",
+"Йоруба",
+"Казахский",
+"Каннада",
+"Каталанский",
+"Киньяруанда",
+"Киргизский",
+"Китайский (традиционный)",
+"Китайский (упрощенный)",
+"Корейский",
+"Корсиканский",
+"Коса",
+"Курдский",
+"Кхмерский",
+        "Лаосский",
+        "Латинский",
+        "Латышский",
+"Литовский",
+"Люксембургский",
+"Македонский",
+"Малагасийский",
+"Малайский",
+"Малаялам",
+"Мальтийский",
+"Маори",
+"Маратхи",
+"Монгольский",
+"Немецкий",
+"Непальский",
+"Нидерландский",
+"Норвежский",
+"Ньянджа",
+"Ория",
+"Панджаби",
+"Персидский",
+"Польский",
+"Португальский",
+"Пушту",
+"Румынский",
+"Русский",
+"Самоанский",
+"Себуанский",
+"Сербский",
+"Сингальский",
+"Синдхи",
+"Словацкий",
+"Словенский",
+"Сомали",
+"Суахили",
+"Сунданский",
+"Таджикский",
+"Тайский",
+"Тамильский",
+"Татарский",
+"Телугу",
+"Турецкий",
+"Туркменский",
+"Узбекский",
+"Уйгурский",
+"Украинский",
+"Урду",
+"Филиппинский",
+"Финский",
+"Французский",
+"Хауса",
+"Хинди",
+"Хмонг",
+"Хорватский",
+"Чешский",
+"Шведский",
+"Шона",
+"Эсперанто",
+"Эстонский",
+"Южный сото",
+"Яванский",
+"Японский"
+ };
+
+    public void Save()
+    {
+        if (isNewProfile)
+        {
+            session.Store(messageTemplate);
+        }
+        session.SaveChanges();
+        session.Dispose();
+        UriHelper.NavigateTo("/messages");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        session = MessageTemplatesService.GetSession();
+        if (MessageId == null)
+        {
+            isNewProfile = true;
+        }
+        if (MessageId != null && MessageId != "")
+        {
+            var result = session.Load<MessageTemplate>(MessageId.Replace('_', '/'));
+            if (result != null)
+            {
+                messageTemplate = result;
+            }
+            else
+            {
+                messageTemplate = new Atom.HR.MessageTemplates.MessageTemplate() { Language = "Русский" };
+                isNewProfile = true;
+            }
+        }
+    }
+}

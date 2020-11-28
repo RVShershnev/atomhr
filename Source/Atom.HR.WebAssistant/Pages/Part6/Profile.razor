@@ -1,0 +1,199 @@
+﻿@page "/createprofile"
+@page "/profiles/{ProfileId}"
+@using Syncfusion.Blazor.Inputs
+@using Atom.HR.Models
+@using Syncfusion.Blazor.Navigations
+
+@inject Atom.HR.WebAssistant.Areas.Storage.PersonProfileService PersonalProfileService
+@inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+<h3>Profile</h3>
+
+<SfTab CssClass="default-tab">
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Анкета"></TabHeader>
+                <TabItems>
+                    <div class="col-lg-12 control-section">
+                        <div class="content-wrapper">
+                            <div class="row">
+                                <SfButton IsPrimary="true" OnClick="SendInvite" Disabled="IsSendMessage">Отправить приглашение</SfButton>
+                            </div>
+                            <div class="row">
+                                <b>Основная информация</b>
+                                <SfTextBox Placeholder="Полное имя" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.Name"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <SfTextBox Placeholder="Принадлежность" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.TypeCompanyRelation"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <SfTextBox Placeholder="Место" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.Situated"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <b>Телефон</b>
+                                <SfMaskedTextBox Mask="0-000-000-0000" @bind-Value="@profile.Telephone"></SfMaskedTextBox>
+                            </div>
+                            <div class="row">
+                                <SfTextBox Placeholder="Email" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.Email"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <SfTextBox Placeholder="О себе" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.About"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <SfCheckBox Label="В браке" @bind-Checked="@profile.IsMarried"></SfCheckBox>
+                            </div>
+                            <div class="row">
+                                <SfTextBox Placeholder="О себе" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.About"></SfTextBox>
+                            </div>
+                            <div class="row">
+                                <SfCheckBox Label="Личный транспорт" @bind-Checked="@profile.HasCar"></SfCheckBox>
+                            </div>
+                            <div class="row">
+                                <SfButton IsPrimary="true" OnClick="Save">Сохранить</SfButton>
+                            </div>
+                        </div>
+                    </div>
+                </TabItems>
+            </ChildContent>           
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Трек"></TabHeader>
+            </ChildContent>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+
+<style>
+    .e-input-picture::before {
+        content: '\e335';
+        font-family: e-icons;
+    }
+
+    .e-input-calendar::before {
+        content: '\e901';
+        font-family: e-icons;
+        font-size: 13px;
+    }
+
+    .content-wrapper {
+        width: 90%;
+        margin: 0 auto;
+        min-width: 85px;
+    }
+
+        .content-wrapper div.row {
+            padding: 15px 0px;
+        }
+
+    .custom-padding-05 {
+        padding-top: 5px;
+    }
+
+    @@media only screen and (max-width: 480px) {
+        .content-wrapper {
+            width: 92%;
+        }
+
+        .col-xs-6,
+        .col-xs-4,
+        .col-xs-12 {
+            padding: 10px 5px;
+            width: 100%;
+        }
+
+        .content-wrapper div.row {
+            padding: 0px;
+        }
+    }
+
+    #description td {
+        vertical-align: top;
+    }
+
+    .e-outline.e-float-input,
+    .e-outline.e-float-input.e-control-wrapper {
+        margin-top: 0;
+    }
+
+    .fabric .row.material2,
+    .bootstrap .row.material2,
+    .bootstrap4 .row.material2,
+    .highcontrast .row.material2 {
+        display: none;
+    }
+
+    .e-upload-picture::before {
+        content: '\e335';
+        font-family: e-icons;
+    }
+
+    .bootstrap4 .e-upload-picture::before {
+        content: '\e769';
+        font-family: e-icons;
+    }
+</style>
+@code  {
+    [Parameter]
+    public string ProfileId { get; set; }
+    bool isNewProfile { get; set; } = false;
+
+    bool IsSendMessage { get; set; }
+
+    SfTextBox date;
+    SfTextBox upload;
+
+    PersonProfile profile { get; set; } = new PersonProfile();
+    Raven.Client.Documents.Session.IDocumentSession session;
+    public void onCreateDate()
+    {
+        this.date.AddIcon("append", "e-date-icon");
+    }
+    public void onCreateUpload()
+    {
+        this.upload.AddIcon("prepend", "e-upload-picture");
+    }
+
+    public void Save()
+    {
+        if (isNewProfile)
+        {
+            session.Store(profile);
+        }
+        session.SaveChanges();
+        session.Dispose();
+        UriHelper.NavigateTo("/profiles");
+    }
+
+    public async Task SendInvite()
+    {
+        IsSendMessage = true;
+        var responce = await MessageTemplatesService.SendInvite(profile);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        session = PersonalProfileService.GetSession();
+        if (ProfileId == null)
+        {
+            isNewProfile = true;
+        }
+        if (ProfileId != null && ProfileId != "")
+        {
+
+            var result = session.Load<PersonProfile>(ProfileId.Replace('_', '/'));
+            if (result != null)
+            {
+                profile = result;
+            }
+            else
+            {
+                profile = new PersonProfile();
+                isNewProfile = true;
+            }
+        }
+    }
+}

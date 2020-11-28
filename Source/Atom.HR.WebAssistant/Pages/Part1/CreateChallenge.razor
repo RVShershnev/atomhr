@@ -1,0 +1,68 @@
+﻿@page "/createchallenge"
+@using Atom.HR.Models 
+
+<h5>
+    Тесты
+</h5>
+
+<SfGrid DataSource="@GridData" AllowSelection="true" AllowSorting="true" AllowFiltering="true" EnableVirtualization="true" EnableHover="false" Height="600" RowHeight="38">
+    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+    <GridPageSettings PageSize="40"></GridPageSettings>
+    <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" AllowFiltering="false" AllowSorting="false" Width="60"></GridColumn>
+        <GridColumn Field=@nameof(TestWork.Id) HeaderText="Id" Visible="true" IsPrimaryKey="true" Width="130"></GridColumn>
+        <GridColumn Field=@nameof(TestWork.Name) HeaderText="Название" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+        <GridColumn Field=@nameof(TestWork.Source) HeaderText="Ссылка" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+        <GridColumn Field=@nameof(TestWork.NameSkills) HeaderText="Скиллы" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<div class="col-lg-12 control-section">
+    <div id="listbox-control">
+        <div class="dual-list-wrapper">
+            <div class="dual-list-groupa">
+                <h4>Критерии</h4>
+                <SfListBox @ref="listbox1" DataSource="@GroupA" TItem="ListData" Height="330px" TValue="string[]">
+                    <ListBoxFieldSettings Text="Name" Value="Code"></ListBoxFieldSettings>
+                    <ListBoxToolbarSettings Items="@Items"></ListBoxToolbarSettings>
+                </SfListBox>
+            </div>   
+        </div>
+    </div>
+</div>
+
+
+@code {
+    List<Atom.HR.Models.TestWork> testWorks { get; set; } = new List<Models.TestWork>();
+
+    SfListBox<string[], ListData> listbox1;
+    public string[] Items = new string[] { "MoveUp", "MoveDown" };
+
+
+
+
+    public List<ListData> GroupA = new List<ListData> {
+        new ListData { Name = "Английский язык", Code = "AU" },
+        new ListData { Name = "asp.net", Code = "BM" },
+        new ListData { Name = "алгоритмы и структур данных", Code = "CA" },
+        new ListData { Name = "С#", Code = "CM" },
+        new ListData { Name = "Python", Code = "DK" },
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            StateHasChanged(); // Re-render component to update the ListBox component Scope references in each connected ListBox.
+        }
+    }
+    public class ListData
+    {
+        public string Name { get; set; }
+        public string Code { get; set; }
+    }
+
+    public IEnumerable<TestWork> GridData { get; set; }
+}

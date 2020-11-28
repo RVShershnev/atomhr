@@ -1,0 +1,67 @@
+﻿@page "/createtest"
+@page "/createtest/{Id}"
+
+@using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Calendars
+@using Atom.HR.Models
+@using Atom.HR.MessageTemplates
+
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
+    
+
+<h3>Создать тест</h3>
+<div class="row mt-2">
+    <div class="col-lg-4">
+        <SfTextBox Placeholder="Название" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@messageTemplate.Name"></SfTextBox>
+    </div>
+</div>
+
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="Save">Сохранить</SfButton>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    bool isNewProfile { get; set; } = false;
+    Raven.Client.Documents.Session.IDocumentSession session;
+
+    Atom.HR.MessageTemplates.MessageTemplate messageTemplate { get; set; } = new Atom.HR.MessageTemplates.MessageTemplate();
+      
+    public void Save()
+    {
+        if (isNewProfile)
+        {
+            session.Store(messageTemplate);
+        }
+        session.SaveChanges();
+        session.Dispose();
+        UriHelper.NavigateTo("/messages");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        session = MessageTemplatesService.GetSession();
+        if (Id == null)
+        {
+            isNewProfile = true;
+        }
+        if (Id != null && Id != "")
+        {
+            var result = session.Load<MessageTemplate>(Id.Replace('_', '/'));
+            if (result != null)
+            {
+                messageTemplate = result;
+            }
+            else
+            {
+                messageTemplate = new MessageTemplate();
+                isNewProfile = true;
+            }
+        }
+    }
+}
+
