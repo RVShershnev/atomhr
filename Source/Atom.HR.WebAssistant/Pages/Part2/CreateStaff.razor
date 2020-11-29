@@ -8,11 +8,24 @@
 @using Atom.HR.Models
 @inject Atom.HR.WebAssistant.Areas.Storage.VacancyService VacancyService
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
-
+@inject Atom.HR.WebAssistant.Areas.AI.AIService AIService
 <h3>Создать вакансию</h3>
-
 <div class="row">
-    <SfTextBox Placeholder="Название" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@vacancy.Name"></SfTextBox>
+    <SfComboBox TValue="string" TItem="TypeVacancy" PopupHeight="230px" Placeholder="Выберите тип вакансии" @bind-Value="@DropVal" DataSource="@Games">
+        <ComboBoxEvents TValue="string" TItem="TypeVacancy" ValueChange="OnChange"></ComboBoxEvents>
+        <ComboBoxFieldSettings Text="Text" Value="ID"></ComboBoxFieldSettings>
+    </SfComboBox>
+</div>
+<div class="row">
+    <SfTextBox Placeholder="Название вакансии" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@vacancy.Name"></SfTextBox>
+</div>
+<div class="row">
+    <SfMultiSelect TValue="string[]" Placeholder="навыки" DataSource="@Skills" Mode="@VisualMode.Default" AllowCustomValue="true" @bind-Value="@MulVal">
+        <MultiSelectFieldSettings Text="Name" Value="Name"></MultiSelectFieldSettings>
+    </SfMultiSelect>
+</div>
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="GetRecomendation">Получить рекомендации</SfButton>
 </div>
 <h5>Описание вакансии</h5>
 <div class="row">
@@ -22,36 +35,111 @@
         </ChildContent>
     </SfRichTextEditor>
 </div>
-<div class="row">
-    <h5>Бюджет на проект</h5>
-    <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=15 Step=@setIncrement></SfNumericTextBox>
-    <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=15 Step=@setIncrement></SfNumericTextBox>
-</div>
-
-<div class="row">
-    <h5>Срок закрытия вакансии</h5>
-    <SfCheckBox @bind-Checked="@isChecked" Label="Без срока" @bind-Value="@vacancy.Description"></SfCheckBox>
-</div>
-<div class="row">
-    <SfDatePicker TValue="DateTime?" Placeholder="Choose a Date"></SfDatePicker>
-</div>
-
-<div class="row">
-    <h5>Срок проекта</h5>
-    <SfCheckBox @bind-Checked="@isCheckedRange" Label="Без срока"></SfCheckBox>
-</div>
-<div class="row">
-    <SfDateRangePicker Placeholder="Choose a Range" Min="@MinDate" Max="@MaxDate"></SfDateRangePicker>
-</div>
-<div class="row">
-    <h5>Навыки</h5>
-    <SfMultiSelect TValue="string[]" Mode="@VisualMode.CheckBox" Placeholder="Select a vegetable" DataSource="@SkillList" ShowSelectAll="@ShowSelectAllCheckBox"
-                   EnableSelectionOrder="@EnableSelectionOrders" FilterBarPlaceholder="Search Vegetables" EnableGroupCheckBox="@EnableCheckBox" PopupHeight="350px">
-        <MultiSelectFieldSettings GroupBy="@nameof(Skill.Group)" Value="@nameof(Skill.Name)"></MultiSelectFieldSettings>
-    </SfMultiSelect>
-</div>
-@if (vacancy.ChallengeId == null || vacancy.ChallengeId == "")
+@if (this.vacancy.Type == "Командная")
 {
+    <div class="row">
+        <p>Бюджет на проект</p>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=1000000 Step=@setIncrement></SfNumericTextBox>
+        </div>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=1500000 Step=@setIncrement></SfNumericTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Срок закрытия вакансий</p>
+        </div>
+        <div class="col">
+            <SfCheckBox @bind-Checked="@isChecked" Label="Без срока"></SfCheckBox>
+        </div>
+    </div>
+    <div class="row">
+        <SfDatePicker TValue="DateTime?" Placeholder="Выберите даты"></SfDatePicker>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Срок проекта</p>
+        </div>
+        <div class="col">
+            <SfCheckBox @bind-Checked="@isCheckedRange" Label="Без срока"></SfCheckBox>
+        </div>
+    </div>
+    <div class="row">
+        <SfDateRangePicker Placeholder="Выберите даты" Min="@MinDate" Max="@MaxDate"></SfDateRangePicker>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <p>Срок закрытия вакансий</p>
+        </div>
+        <div class="col">
+            <SfCheckBox @bind-Checked="@isChecked" Label="Без срока"></SfCheckBox>
+        </div>
+    </div>
+    <div class="row">
+        <SfDatePicker TValue="DateTime?" Placeholder="Choose a Date"></SfDatePicker>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Срок проекта</p>
+        </div>
+        <div class="col">
+            <SfCheckBox @bind-Checked="@isCheckedRange" Label="Без срока"></SfCheckBox>
+        </div>
+    </div>
+    <div class="row">
+        <SfDateRangePicker Placeholder="Выберите даты" Min="@MinDate" Max="@MaxDate"></SfDateRangePicker>
+    </div>
+    <div class="row">
+        <div class="row">
+            <p>Рекомендация по зарплате</p>
+        </div>
+    <div class="row">
+        <div class="col">
+            <p>Минимальная</p>
+        </div>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Readonly="true" Value="@aiData.Min"></SfNumericTextBox>
+        </div>
+        <div class="col">
+            <p>Максимальная</p>
+        </div>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Readonly="true" Value="@aiData.Max"></SfNumericTextBox>
+        </div>
+        <div class="col">
+            <p>Медиана</p>
+        </div>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Readonly="true" Value="@aiData.Med"></SfNumericTextBox>
+        </div>
+        <div class="col">
+            <p>Среднее</p>
+        </div>
+        <div class="col">
+            <SfNumericTextBox TValue="double?" Readonly="true" Value="@aiData.Avg"></SfNumericTextBox>
+        </div>
+    </div>
+</div>
+    <p>Зарплата</p>
+    <div class="col">
+        <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=20000 Step=@setIncrement></SfNumericTextBox>
+    </div>
+    <div class="col">
+        <SfNumericTextBox TValue="double?" Min="@setMin" Max="@setMax" Value=100000 Step=@setIncrement></SfNumericTextBox>
+    </div>
+}
+
+
+<div class="row">
+    <SfButton IsPrimary="true" OnClick="Create">Создать</SfButton>
+</div>
+
+@if (vacancy.ChallengeId == null || vacancy.ChallengeId == "")
+{  
     <div class="content-wrapper">
         <div class="row">
             <SfButton IsPrimary="true" OnClick="CreateChellenge">Добавить Челендж!!!</SfButton>
@@ -66,18 +154,36 @@ else
         </div>
     </div>
 }
-<div class="class">
-    <SfButton IsPrimary="true" OnClick="Create">Создать</SfButton>
-</div>
+@if(chc)
+{
+<Atom.HR.WebAssistant.Pages.Part1.CreateChallenge @ref="challenge" vacancy="@vacancy">
 
+</Atom.HR.WebAssistant.Pages.Part1.CreateChallenge>
+}
 @code {
 
+    #region AiData
+    public string[] MulVal = null;
+    string specName = "";
+    AiData aiData = new AiData();
+
+    bool chc = false;
+
+    Atom.HR.WebAssistant.Pages.Part1.CreateChallenge challenge { get; set; }
+
+    public class AiData
+    {
+        public double Min { get; set; }
+        public double Max { get; set; }
+        public double Med { get; set; }
+        public double Avg { get; set; }
+    }
+    #endregion
     private double? setMin { get; set; } = 0;
     private double? setMax { get; set; } = double.MaxValue;
     private double? setIncrement { get; set; } = 1;
     private double? stepMin { get; set; } = 1;
-
-
+    List<Skill> Skills { get; set; } = new List<Skill>();
     private bool isCheckedRange = true;
     private bool isChecked = true;
     public DateTime MinDate { get; set; } = DateTime.Now;
@@ -95,6 +201,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Skills = await VacancyService.GetAllSkills();
         session = VacancyService.GetSession();
         if (Id == null)
         {
@@ -115,6 +222,31 @@ else
             }
         }
     }
+    protected async Task GetRecomendation()
+    {
+        var query = "";
+        for (var i = 0; i < MulVal.Length; i++)
+        {
+            query += MulVal[i] + " ";
+        }
+        var t = await AIService.GetSpecialization(query.TrimEnd(' '));
+
+        var q = await AIService.GetPrice(t);
+
+        try
+        {
+            var qq = q.Split(',');
+            aiData.Min = Convert.ToDouble(qq[0]);
+            aiData.Avg = Convert.ToDouble(qq[1]);
+            aiData.Max = Convert.ToDouble(qq[2]);
+            aiData.Med = Convert.ToDouble(qq[3]);
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
 
     protected void Create()
     {
@@ -128,11 +260,14 @@ else
     }
     protected void CreateChellenge()
     {
-        UriHelper.NavigateTo($"createchallenge");
+        chc = true;
+        StateHasChanged();
+
     }
     protected void ViewChellenge()
     {
-        UriHelper.NavigateTo($"challenge");
+        chc = true;
+        StateHasChanged();
     }
 
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
@@ -169,58 +304,21 @@ else
         new ToolbarItemModel() { Command = ToolbarCommand.Redo }
     };
 
-
-    public bool ShowSelectAllCheckBox { get; set; } = true;
-    public bool EnableSelectionOrders { get; set; } = false;
-    public bool EnableCheckBox { get; set; } = true;
-    public class Vegetables
+    public class TypeVacancy
     {
-        public string Vegetable { get; set; }
-        public string Category { get; set; }
         public string ID { get; set; }
+        public string Text { get; set; }
     }
-    List<Skill> SkillList = new List<Skill>()
-{
-        new Skill() { Name = "c#", Group = "programming"},
-        new Skill() { Name = "asp.net", Group = "web"},
-        new Skill() { Name = "powerbi", Group = "analytic"},
-        new Skill() { Name = "java", Group = "programming"},
-        new Skill() { Name = "scala", Group = "programming" },
-        new Skill() { Name = "blazor", Group = "web"},
-        new Skill() { Name = "xamarin", Group = "mobile" },
-        new Skill() { Name = "python", Group = "Programming"},
+    private List<TypeVacancy> Games = new List<TypeVacancy>() {
+        new TypeVacancy(){ ID= "1", Text= "Единичная" },
+        new TypeVacancy(){ ID= "2", Text= "Командная" }
+     };
 
-    };
-
-    SfCheckBox<bool> CheckboxObj;
-    private bool Visibility { get; set; } = true;
-    private bool ShowButton { get; set; } = false;
-    private void DialogOpen(Object args)
+    public string DropVal = "Единичная";
+    public string ChangeValue { get; set; } = "Basketball";
+    public void OnChange(Syncfusion.Blazor.DropDowns.ChangeEventArgs<string, TypeVacancy> args)
     {
-        this.ShowButton = false;
-    }
-    private void DialogClose(Object args)
-    {
-        this.ShowButton = true;
-    }
-    private void OnBtnClick()
-    {
-        this.Visibility = true;
-    }
-    private void DlgButtonClick()
-    {
-        this.Visibility = false;
-    }
-    private void OverlayClick(Object args)
-    {
-        if ((bool)this.CheckboxObj.Checked)
-        {
-            this.Visibility = false;
-        }
-        else
-        {
-            this.Visibility = true;
-        }
+        this.vacancy.Type = args.ItemData?.Text;
     }
 }
 <style>

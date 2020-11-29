@@ -1,5 +1,4 @@
-﻿@page "/createchallenge"
-@using Atom.HR.Models 
+﻿@using Atom.HR.Models 
 
 <h5>
     Тесты
@@ -23,7 +22,7 @@
         <div class="dual-list-wrapper">
             <div class="dual-list-groupa">
                 <h4>Критерии</h4>
-                <SfListBox @ref="listbox1" DataSource="@GroupA" TItem="ListData" Height="330px" TValue="string[]">
+                <SfListBox @ref="listbox1" DataSource="@GroupA" TItem="Skill" Height="330px" TValue="string[]">
                     <ListBoxFieldSettings Text="Name" Value="Code"></ListBoxFieldSettings>
                     <ListBoxToolbarSettings Items="@Items"></ListBoxToolbarSettings>
                 </SfListBox>
@@ -34,21 +33,24 @@
 
 
 @code {
+
+    [Parameter]
+    public Vacancy vacancy { get; set; }
+
     List<Atom.HR.Models.TestWork> testWorks { get; set; } = new List<Models.TestWork>();
 
-    SfListBox<string[], ListData> listbox1;
+    SfListBox<string[], Skill> listbox1;
     public string[] Items = new string[] { "MoveUp", "MoveDown" };
 
+    protected override async Task OnInitializedAsync()
+    {
+        GroupA = vacancy.Skills;            
+    }
 
 
 
-    public List<ListData> GroupA = new List<ListData> {
-        new ListData { Name = "Английский язык", Code = "AU" },
-        new ListData { Name = "asp.net", Code = "BM" },
-        new ListData { Name = "алгоритмы и структур данных", Code = "CA" },
-        new ListData { Name = "С#", Code = "CM" },
-        new ListData { Name = "Python", Code = "DK" },
-    };
+    public List<Skill> GroupA;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

@@ -1,6 +1,8 @@
+using Atom.HR.WebAssistant.Areas.AI;
 using Atom.HR.WebAssistant.Areas.Communications;
 using Atom.HR.WebAssistant.Areas.Identity;
 using Atom.HR.WebAssistant.Areas.Storage;
+using Atom.HR.WebAssistant.Areas.TestWorks;
 using Atom.HR.WebAssistant.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -50,7 +52,9 @@ namespace Atom.HR.WebAssistant
             services.AddSingleton<MessageTemplatesService>();
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzU3NzY3QDMxMzgyZTMzMmUzMExqSWVLRGtaMkRtNWFLZFBRT0phSXZWTktENUtQNFlsMEVZMUZRNHcvZUU9");
             services.AddSyncfusionBlazor();
-
+            services.AddSingleton<TestWorkService>();
+            services.AddSingleton<AIService>();
+            
             services.AddControllers();
         }
 

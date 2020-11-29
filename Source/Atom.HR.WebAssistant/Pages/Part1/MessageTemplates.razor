@@ -5,6 +5,8 @@
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Notifications
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
 
@@ -15,8 +17,11 @@
 <div class="row">
     <SfGrid DataSource="@GridData" AllowFiltering="true" AllowGrouping="true" AllowExcelExport="true">
         <GridEvents OnRecordClick="RecordClick" TValue="MessageTemplate"></GridEvents>
+        <GridPageSettings PageSize="40"></GridPageSettings>
+        <GridSelectionSettings CheckboxOnly="true" PersistSelection="true" Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
         <GridColumns>
-            <GridColumn Field=@nameof(MessageTemplate.Id) HeaderText="Id" IsPrimaryKey="true" TextAlign="@TextAlign.Center" HeaderTextAlign="@TextAlign.Center" Width="140"></GridColumn>
+            <GridColumn Type="ColumnType.CheckBox" AllowFiltering="false" AllowSorting="false" Width="60"></GridColumn>
+            <GridColumn Field=@nameof(MessageTemplate.Id) HeaderText="Id" Visible="false" IsPrimaryKey="true" TextAlign="@TextAlign.Center" HeaderTextAlign="@TextAlign.Center" Width="140"></GridColumn>
             <GridColumn Field=@nameof(MessageTemplate.Name) HeaderText="Название" ValidationRules="@(new ValidationRules{ Required=true})" Width="150"></GridColumn>
             <GridColumn Field=@nameof(MessageTemplate.Language) HeaderText="Язык" Width="140" TextAlign="@TextAlign.Right" ValidationRules="@(new ValidationRules { Required = true })" HeaderTextAlign="@TextAlign.Right"></GridColumn>
             <GridColumn Field=@nameof(MessageTemplate.Sex) HeaderText="Пол" TextAlign="TextAlign.Right" Type="ColumnType.Date" Width="160"></GridColumn>
@@ -25,11 +30,11 @@
     </SfGrid>
 </div>
 
-    @code {
+@code {
 
         public List<MessageTemplate> GridData { get; set; } = new List<MessageTemplate>();
         private bool Check = false;
-      
+
         protected override async Task OnInitializedAsync()
         {
             GridData = await MessageTemplatesService.GetAllMessageTemplates();
@@ -46,4 +51,4 @@
             UriHelper.NavigateTo($"/messages/{prjectId.Replace('/', '_')}");
         }
 
-    }
+}

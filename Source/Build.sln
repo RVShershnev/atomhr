@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.HR.Models", "Atom.HR.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.HR.MessageTemplates", "Atom.HR.MessageTemplates\Atom.HR.MessageTemplates.csproj", "{9F893F1E-37FE-4D32-9CD4-F070D872586E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.Security.RunCV", "Atom.Security.RunCV\Atom.Security.RunCV.csproj", "{AAD18F50-7FCB-4D1E-9DAB-3CCABFB4423C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.HR.RandomDataToDatabase", "Atom.HR.RandomDataToDatabase\Atom.HR.RandomDataToDatabase.csproj", "{345FD921-B1A8-4227-9B9B-C088322D7D04}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atom.HR.Shared", "Atom.HR.Shared\Atom.HR.Shared.csproj", "{D61249A1-C918-4D01-A8A5-087E9E76E801}"
@@ -45,10 +43,6 @@ Global
 		{9F893F1E-37FE-4D32-9CD4-F070D872586E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F893F1E-37FE-4D32-9CD4-F070D872586E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F893F1E-37FE-4D32-9CD4-F070D872586E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAD18F50-7FCB-4D1E-9DAB-3CCABFB4423C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAD18F50-7FCB-4D1E-9DAB-3CCABFB4423C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAD18F50-7FCB-4D1E-9DAB-3CCABFB4423C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAD18F50-7FCB-4D1E-9DAB-3CCABFB4423C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{345FD921-B1A8-4227-9B9B-C088322D7D04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{345FD921-B1A8-4227-9B9B-C088322D7D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{345FD921-B1A8-4227-9B9B-C088322D7D04}.Release|Any CPU.ActiveCfg = Release|Any CPU

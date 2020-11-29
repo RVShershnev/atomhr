@@ -11,31 +11,28 @@
 @inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
 
 <h3>Создать шаблон</h3>
-<div class="row mt-2">
-    <div class="col-lg-4">
+<div class="row mt-2">   
         <SfTextBox Placeholder="Название" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@messageTemplate.Name"></SfTextBox>
-    </div>
 </div>
 <div class="row mt-2">
-    <div class="title col-lg-6">Язык</div>
-    <div class="col-lg-2">
-        <SfAutoComplete TValue="string" TItem="string" Placeholder="e.g. Английский" DataSource="@Languages" @bind-Value="messageTemplate.Language">
+        <SfAutoComplete TValue="string" TItem="string" Placeholder="Язык" FloatLabelType="@FloatLabelType.Auto" DataSource="@Languages" @bind-Value="messageTemplate.Language">
             <AutoCompleteFieldSettings Value="Text"></AutoCompleteFieldSettings>
         </SfAutoComplete>
-    </div>
 </div>
 <div class="row mt-2">
-    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" Placeholder="Выберите пол" @bind-Value="@messageTemplate.Sex" DataSource="@Sexes">
+    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" FloatLabelType="@FloatLabelType.Auto" Placeholder="Пол" @bind-Value="@messageTemplate.Sex" DataSource="@Sexes">
     </SfComboBox>
 </div>
 <div class="row mt-2">
-    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" Placeholder="Выберите канал" @bind-Value="@messageTemplate.Channel" DataSource="@Channels">
+    <SfComboBox TValue="string" TItem="string" PopupHeight="230px" FloatLabelType="@FloatLabelType.Auto" Placeholder="Канал" @bind-Value="@messageTemplate.Channel" DataSource="@Channels">
     </SfComboBox>
 </div>
 <div class="row mt-2">
-   
-        <SfTextBox Placeholder="Введите текст шаблона" FloatLabelType="FloatLabelType.Always" Multiline="true"  @bind-Value="@messageTemplate.Text"></SfTextBox>
-
+        <SfTextBox Placeholder="Введите текст шаблона" FloatLabelType="FloatLabelType.Always" Multiline="true" @bind-Value="@messageTemplate.Text"></SfTextBox>
+</div>
+<div class="row mt-2">
+    <SfComboBox Placeholder="Привязка" FloatLabelType="FloatLabelType.Always" @bind-Value="@messageTemplate.Key"  DataSource="@Binders">
+    </SfComboBox>
 </div>
 <div class="row">
     <SfButton IsPrimary="true" OnClick="Save">Сохранить</SfButton>
@@ -49,8 +46,6 @@
 
     Atom.HR.MessageTemplates.MessageTemplate messageTemplate { get; set; } = new Atom.HR.MessageTemplates.MessageTemplate() { Language = "Русский" };
 
-
-
     private List<string> Sexes = new List<string>()
 {
         Sex.Male.ToString(),
@@ -58,11 +53,19 @@
         Sex.Any.ToString()
     };
     private List<string> Channels = new List<string>()
-{
+    {
          "Телефон",
          "Мессенджер",
          "Email"
     };
+
+private List<string> Binders = new List<string>()
+{
+      "Приглашение",
+      "Оценка",
+      "Поздравление"
+};
+
     private List<string> Languages = new List<string>()
 {
             "Азербайджанский",

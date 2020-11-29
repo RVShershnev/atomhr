@@ -1,7 +1,12 @@
-﻿using Atom.HR.Models;
+﻿using Atom.HR.MessageTemplates;
+using Atom.HR.Models;
+using Newtonsoft.Json;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Atom.HR.RandomDataToDatabase
@@ -14,6 +19,14 @@ namespace Atom.HR.RandomDataToDatabase
             Console.ReadLine();
             var store = CreateStore();
 
+
+            PutSkill(store);
+            // PutResume(store);
+            //PutMessageTemplate(store);
+
+        }
+        public static void PutResume(IDocumentStore store)
+        {
             using (IDocumentSession session = store.OpenSession("hrdb"))
             {
                 // generate Id automatically
@@ -30,7 +43,7 @@ namespace Atom.HR.RandomDataToDatabase
                     Situated = "Обнинск",
                     TypeCompanyRelation = "Участник"
 
-                }) ;
+                });
 
                 // generate Id automatically
                 session.Store(new PersonProfile
@@ -80,9 +93,87 @@ namespace Atom.HR.RandomDataToDatabase
                 // send all pending operations to server, in this case only `Put` operation
                 session.SaveChanges();
 
-           
+
             }
         }
+        public static void PutMessageTemplate(IDocumentStore store)
+        {
+            using (IDocumentSession session = store.OpenSession("hrdb"))
+            {
+                var list = new List<MessageTemplate>()
+                {
+                new MessageTemplate()
+                {
+                    Name = "Hi",
+                    Language = "Английский",
+                    Key = "Приветствие",
+                    Channel = "Телефон",
+                    Sex = Sex.Any.ToString(),
+                    Text = "Hi, $(N). How are you?"
+                },
+               new MessageTemplate()
+                {
+                    Name = "Здравствуйте1",
+                    Language = "Английский",
+                    Key = "Приветствие",
+                    Channel = "Телефон",
+                    Sex = Sex.Any.ToString(),
+                    Text = "Здравствуйте, $(N). Приглашаем Вас на встречу."
+                }, new MessageTemplates.MessageTemplate()
+                {
+                    Name = "Приглашаю1",
+                    Language = "Английский",
+                    Key = "Приветствие",
+                    Channel = "Телефон",
+                    Sex = Sex.Any.ToString(),
+                    Text = "Привет, $(N). Приглашаем Вас на встречу."
+                },
+                new MessageTemplates.MessageTemplate()
+                {
+                    Name = "Приглашаю",
+                    Language = "Английский",
+                    Key = "Приветствие",
+                    Channel = "Телефон",
+                    Sex = Sex.Any.ToString(),
+                    Text = "Здравствуйте, $(N). Приглашаем Вас на встречу."
+                   }
+                };
+
+                foreach (var item in list)
+                {                    
+                    session.Store(item);
+                }           
+                // send all pending operations to server, in this case only `Put` operation
+                session.SaveChanges();
+            }
+        }
+
+        public static void PutSkill(IDocumentStore store)
+        {
+            var Rand = new Random();
+         
+            using (IDocumentSession session = store.OpenSession("hrdb"))
+            {
+                var skill = (File.ReadAllText("skills.json"));
+                var sp = @"\"", \""";
+                var ttrrr = skill.Remove(0, 4);
+                skill = ttrrr.Remove(ttrrr.Length - 4, 4);
+                var tt = skill.Split(sp);
+                {
+                    for (var i = 0; i < tt.Length; i++)
+                    {
+                        var n = Rand.Next(1, 12);
+                        var date = new DateTime(DateTime.Now.Year, n, DateTime.Now.Day);
+                        var fgg = new Skill() { Name = tt[i], DateTimeCreated = date };
+                      
+                        session.Store(fgg);
+                    }
+                }
+                // send all pending operations to server, in this case only `Put` operation
+                session.SaveChanges();
+            }
+        }
+
 
         private static IDocumentStore CreateStore()
         {

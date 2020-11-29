@@ -7,10 +7,10 @@
 @using Atom.HR.Models;
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject Atom.HR.WebAssistant.Areas.TestWorks.TestWorkService TestWorkService
-
+@inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
 
 <div class="row">
-    <SfButton IsPrimary="true" OnClick="CreateVacabcy">Primary</SfButton>
+    <SfButton IsPrimary="true" OnClick="CreateVacabcy">Создать тест</SfButton>
 </div>
 <div class="row">
     <SfSpinner @ref="SpinnerObj" Target="#container"></SfSpinner>
@@ -23,8 +23,8 @@
             <GridColumns>
                 <GridColumn Field=@nameof(TestWork.Id) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
                 <GridColumn Field=@nameof(TestWork.Name) HeaderText="Полное имя" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                <GridColumn Field=@nameof(TestWork.Source) HeaderText="Отношение" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                <GridColumn Field=@nameof(TestWork.Type) HeaderText="Отношение" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(TestWork.Source) HeaderText="Источник" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(TestWork.Type) HeaderText="Тип" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
             </GridColumns>
         </SfGrid>
     </div>

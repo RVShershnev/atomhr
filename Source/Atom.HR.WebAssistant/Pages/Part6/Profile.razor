@@ -7,14 +7,8 @@
 @inject Atom.HR.WebAssistant.Areas.Storage.PersonProfileService PersonalProfileService
 @inject Atom.HR.WebAssistant.Areas.Communications.MessageTemplatesService MessageTemplatesService
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
-<h3>Profile</h3>
 
-<SfTab CssClass="default-tab">
-    <TabItems>
-        <TabItem>
-            <ChildContent>
-                <TabHeader Text="Анкета"></TabHeader>
-                <TabItems>
+<h3>Профиль</h3>
                     <div class="col-lg-12 control-section">
                         <div class="content-wrapper">
                             <div class="row">
@@ -36,10 +30,7 @@
                             </div>
                             <div class="row">
                                 <SfTextBox Placeholder="Email" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.Email"></SfTextBox>
-                            </div>
-                            <div class="row">
-                                <SfTextBox Placeholder="О себе" FloatLabelType="@FloatLabelType.Auto" @bind-Value="@profile.About"></SfTextBox>
-                            </div>
+                            </div>                            
                             <div class="row">
                                 <SfCheckBox Label="В браке" @bind-Checked="@profile.IsMarried"></SfCheckBox>
                             </div>
@@ -54,16 +45,7 @@
                             </div>
                         </div>
                     </div>
-                </TabItems>
-            </ChildContent>           
-        </TabItem>
-        <TabItem>
-            <ChildContent>
-                <TabHeader Text="Трек"></TabHeader>
-            </ChildContent>
-        </TabItem>
-    </TabItems>
-</SfTab>
+    
 
 
 <style>

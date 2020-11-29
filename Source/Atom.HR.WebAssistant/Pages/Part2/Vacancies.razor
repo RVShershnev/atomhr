@@ -21,52 +21,51 @@
         <SfButton IsPrimary="true" OnClick="ClickTeam">Новая команда</SfButton>
     </div>
 </div>
-    <div class="row">
-        <SfSpinner @ref="SpinnerObj" Target="#container"></SfSpinner>
-        <div id="container">
-            <SfGrid DataSource="@GridData" AllowSelection="true" AllowSorting="true" AllowFiltering="true" AllowGrouping="true" EnableVirtualization="true" EnableHover="false" Height="600" RowHeight="38">
-                <GridEvents OnRecordClick="RecordClick" TValue="Vacancy"></GridEvents>
-                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
-                <GridPageSettings PageSize="40"></GridPageSettings>
-                <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
-                <GridColumns>
-                    <GridColumn Type="ColumnType.CheckBox" AllowFiltering="false" AllowSorting="false" Width="60"></GridColumn>
-                    <GridColumn Field=@nameof(Vacancy.Id) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Vacancy.Name) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Vacancy.IsPublish) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                    <GridColumn Field=@nameof(Vacancy.CloseVacancy) HeaderText="Id" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
-                </GridColumns>
-            </SfGrid>
-        </div>
+<div class="row">
+    <SfSpinner @ref="SpinnerObj" Target="#container"></SfSpinner>
+    <div id="container">
+        <SfGrid DataSource="@GridData" AllowSelection="true" AllowSorting="true" AllowFiltering="true" AllowGrouping="true" EnableVirtualization="true" EnableHover="false" Height="600" RowHeight="38">
+            <GridEvents OnRecordClick="RecordClick" TValue="Vacancy"></GridEvents>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+            <GridPageSettings PageSize="40"></GridPageSettings>
+            <GridSelectionSettings CheckboxOnly="true" PersistSelection="true" Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
+            <GridColumns>
+                <GridColumn Type="ColumnType.CheckBox" AllowFiltering="false" AllowSorting="false" Width="60" Visible="false"></GridColumn>
+                <GridColumn Field=@nameof(Vacancy.Id) HeaderText="Id" Visible="true" IsPrimaryKey="true" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Vacancy.Name) HeaderText="Название" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Vacancy.IsPublish) HeaderText="Статус" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Vacancy.CloseVacancy) HeaderText="Дата закрытия" Visible="true" IsPrimaryKey="false" Width="130"></GridColumn>
+            </GridColumns>
+        </SfGrid>
     </div>
+</div>
 
 
-    @code {
-        public List<Vacancy> GridData { get; set; }
-        public int Value { get; set; } = 1000;
-        SfSpinner SpinnerObj;
-        string target { get; set; } = "#container";
+@code {
+    public List<Vacancy> GridData { get; set; }
+    public int Value { get; set; } = 1000;
+    SfSpinner SpinnerObj;
+    string target { get; set; } = "#container";
 
 
-        protected override async Task OnInitializedAsync()
-        {
-            GridData = await VacancyService.GetAllVacancy();
-        }
-
-
-        public void ClickVacancy()
-        {
-            UriHelper.NavigateTo($"createvacancy");
-        }
-
-        public void ClickTeam()
-        {
-            UriHelper.NavigateTo($"createteam");
-        }
-
-        public void RecordClick(RecordClickEventArgs<Vacancy> Args)
-        {
-            var prjectId = Args.RowData.Id;
-            UriHelper.NavigateTo($"/vacancies/{prjectId.Replace('/', '_')}");
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        GridData = await VacancyService.GetAllVacancy();
     }
+
+    public void ClickVacancy()
+    {
+        UriHelper.NavigateTo($"createvacancy");
+    }
+
+    public void ClickTeam()
+    {
+        UriHelper.NavigateTo($"createteam");
+    }
+
+    public void RecordClick(RecordClickEventArgs<Vacancy> Args)
+    {
+        var prjectId = Args.RowData.Id;
+        UriHelper.NavigateTo($"/vacancies/{prjectId.Replace('/', '_')}");
+    }
+}

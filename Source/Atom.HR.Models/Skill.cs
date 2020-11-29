@@ -11,5 +11,6 @@ namespace Atom.HR.Models
         public string Name { get; set; }
         public string Group { get; set; }
         public string SubGroup { get; set; }
+        public DateTime DateTimeCreated { get; set; }
     }
 }

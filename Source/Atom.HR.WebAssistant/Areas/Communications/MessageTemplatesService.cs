@@ -29,7 +29,14 @@ namespace Atom.HR.WebAssistant.Areas.Communications
                 return session.Advanced.LoadStartingWith<MessageTemplate>("MessageTemplates", null, 0, 128).ToList();
             }
         }
-        
+        public async void SendInvite(IEnumerable<PersonProfile> profiles, bool telephone = true, bool email = true)
+        {
+            foreach (var item in profiles)
+            {
+                SendInvite(item);
+            }
+        }
+
         public async Task<SMS.SMSResponse> SendInvite(PersonProfile profile, bool telephone = true, bool email = true)
         {
             string messegeText = "";
